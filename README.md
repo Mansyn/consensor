@@ -1,6 +1,6 @@
 # consensor
 
-A new Flutter project.
+A consensus building app using flutter and firebase
 
 ## Getting Started
 
