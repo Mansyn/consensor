@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "944659310700",
+    "firebase_url": "https://consensor-app.firebaseio.com",
+    "project_id": "consensor-app",
+    "storage_bucket": "consensor-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:944659310700:android:9b10a76266600a9c",
+        "android_client_info": {
+          "package_name": "com.unleashed.consensor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "944659310700-8gb6ghn73n1b6i4a38qq40r5vsor6uva.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unleashed.consensor",
+            "certificate_hash": "6fe6404dfe30376a53e5f54c261131cbb4247287"
+          }
+        },
+        {
+          "client_id": "944659310700-9926rtfjhndl8p1ahiu4c79lktbfcbfg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB41FKy3xvo6F4aoN88Lb_fQCoFt1iwSII"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "944659310700-9926rtfjhndl8p1ahiu4c79lktbfcbfg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
