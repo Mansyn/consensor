@@ -1,3 +1,4 @@
+import 'package:consensor/widgets/action_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:consensor/services/authentication.dart';
 
@@ -56,6 +57,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: _signOut)
           ],
         ),
-        body: _showBody());
+        body: _showBody(),
+        floatingActionButton: ActionFab());
   }
 }
