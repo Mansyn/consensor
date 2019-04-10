@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:consensor/pages/login_signup_page.dart';
+import 'package:consensor/pages/login_page.dart';
 import 'package:consensor/services/authentication.dart';
 import 'package:consensor/pages/home_page.dart';
 
@@ -70,7 +70,7 @@ class _RootPageState extends State<RootPage> {
         return _buildWaitingScreen();
         break;
       case AuthStatus.NOT_LOGGED_IN:
-        return new LoginSignUpPage(
+        return new LoginPage(
           auth: widget.auth,
           onSignedIn: _onLoggedIn,
         );
