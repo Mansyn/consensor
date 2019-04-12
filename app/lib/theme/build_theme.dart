@@ -1,7 +1,7 @@
 import 'package:consensor/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-class FartThemeBuilder {
+class ConsensorThemeBuilder {
   static ThemeData build() {
     final ThemeData base = ThemeData.light();
     return base.copyWith(
@@ -16,9 +16,9 @@ class FartThemeBuilder {
         textTheme: ButtonTextTheme.normal,
       ),
       primaryIconTheme: base.iconTheme.copyWith(color: kBackground),
-      textTheme: _buildShrineTextTheme(base.textTheme),
-      primaryTextTheme: _buildShrineTextTheme(base.primaryTextTheme),
-      accentTextTheme: _buildShrineTextTheme(base.accentTextTheme),
+      textTheme: _buildTextTheme(base.textTheme),
+      primaryTextTheme: _buildTextTheme(base.primaryTextTheme),
+      accentTextTheme: _buildTextTheme(base.accentTextTheme),
       iconTheme: _customIconTheme(base.iconTheme),
     );
   }
@@ -27,20 +27,11 @@ class FartThemeBuilder {
     return original.copyWith(color: kBackground);
   }
 
-  static TextTheme _buildShrineTextTheme(TextTheme base) {
-    return base.copyWith(
-      headline: base.headline.copyWith(
-        fontWeight: FontWeight.w500,
-      ),
-      title: base.title.copyWith(fontSize: 22.0),
-      caption: base.caption.copyWith(
-        fontWeight: FontWeight.w400,
-        fontSize: 14.0,
-      ),
-      body2: base.body2.copyWith(
-        fontWeight: FontWeight.w500,
-        fontSize: 16.0,
-      ),
+  static TextTheme _buildTextTheme(TextTheme base) {
+    return base.apply(
+      fontFamily: 'Nunito',
+      displayColor: kText,
+      bodyColor: kText,
     );
   }
 }

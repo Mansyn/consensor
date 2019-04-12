@@ -13,11 +13,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _formKey = new GlobalKey<FormState>();
-
   String _errorMessage;
 
-  // Initial form is login form
   bool _isIos;
   bool _isLoading;
 
@@ -66,60 +63,44 @@ class _LoginPageState extends State<LoginPage> {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Login...'),
+          title: new Text('Login',
+              style: TextStyle(fontSize: 17.0, color: kSurfaceWhite)),
         ),
-        body: Stack(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            _showBody(),
-            _showCircularProgress(),
-          ],
-        ));
-  }
-
-  Widget _showCircularProgress() {
-    if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return Container(
-      height: 0.0,
-      width: 0.0,
-    );
-  }
-
-  Widget _showBody() {
-    return new Container(
-        padding: EdgeInsets.all(16.0),
-        child: new Form(
-          key: _formKey,
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              new Hero(
+            Hero(
                 tag: 'hero',
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(0.0, 70.0, 0.0, 70.0),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    radius: 48.0,
-                    child: Image.asset('assets/ic_launcher.png'),
-                  ),
-                ),
-              ),
-              _showGoogleButton(),
-              _showErrorMessage(),
-            ],
-          ),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      CircleAvatar(
+                          backgroundColor: kAccent400,
+                          child: Icon(Icons.bubble_chart, size: 75),
+                          radius: 48.0),
+                      SizedBox(height: 15),
+                      Text("CONSENSOR",
+                          style: TextStyle(
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Yatra_One',
+                              color: kAccent400))
+                    ])),
+            _showGoogleButton(),
+            _showErrorMessage(),
+          ],
         ));
   }
 
   Widget _showErrorMessage() {
     if (_errorMessage.length > 0 && _errorMessage != null) {
-      return new Column(
+      return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            new SizedBox(height: 20),
+            SizedBox(height: 20),
             Text(_errorMessage,
                 style: TextStyle(
                     fontSize: 15.0,
@@ -128,21 +109,25 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.w300)),
           ]);
     } else {
-      return new Container(
+      return Container(
         height: 0.0,
       );
     }
   }
 
   Widget _showGoogleButton() {
-    return new Center(
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return Center(
         child: FlatButton.icon(
       color: Color.fromARGB(255, 245, 245, 245),
       icon: Image.asset(
         'assets/google-logo-g.png',
         height: 20,
       ),
-      label: Text('Sign in with Google'),
+      label:
+          Text('Sign in with Google', style: TextStyle(fontFamily: 'Roboto')),
       onPressed: () => _googleSignIn(),
     ));
   }

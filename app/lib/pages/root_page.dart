@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:consensor/pages/login_page.dart';
 import 'package:consensor/services/authentication.dart';
@@ -20,7 +21,7 @@ enum AuthStatus {
 
 class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-  String _userId = "";
+  FirebaseUser _user;
 
   @override
   void initState() {
@@ -28,10 +29,10 @@ class _RootPageState extends State<RootPage> {
     widget.auth.getCurrentUser().then((user) {
       setState(() {
         if (user != null) {
-          _userId = user?.uid;
+          _user = user;
         }
         authStatus =
-            user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
+            user == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
       });
     });
   }
@@ -39,7 +40,7 @@ class _RootPageState extends State<RootPage> {
   void _onLoggedIn() {
     widget.auth.getCurrentUser().then((user) {
       setState(() {
-        _userId = user.uid.toString();
+        _user = user;
       });
     });
     setState(() {
@@ -50,7 +51,7 @@ class _RootPageState extends State<RootPage> {
   void _onSignedOut() {
     setState(() {
       authStatus = AuthStatus.NOT_LOGGED_IN;
-      _userId = "";
+      _user = null;
     });
   }
 
@@ -76,12 +77,12 @@ class _RootPageState extends State<RootPage> {
         );
         break;
       case AuthStatus.LOGGED_IN:
-        if (_userId.length > 0 && _userId != null) {
+        if (_user != null) {
           return new HomePage(
-            userId: _userId,
-            auth: widget.auth,
-            onSignedOut: _onSignedOut,
-          );
+              user: _user,
+              auth: widget.auth,
+              onSignedOut: _onSignedOut,
+              onWaiting: _buildWaitingScreen());
         } else
           return _buildWaitingScreen();
         break;

@@ -1,30 +1,82 @@
-import 'package:consensor/widgets/action_fab.dart';
+import 'dart:io';
+
+import 'package:consensor/theme/colors.dart';
+import 'package:consensor/widgets/group_widget.dart';
+import 'package:consensor/widgets/home_widget.dart';
+import 'package:consensor/widgets/vote_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:consensor/services/authentication.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.auth, this.userId, this.onSignedOut})
+  HomePage({Key key, this.auth, this.user, this.onSignedOut, this.onWaiting})
       : super(key: key);
 
   final BaseAuth auth;
   final VoidCallback onSignedOut;
-  final String userId;
+  final FirebaseUser user;
+  final Widget onWaiting;
 
   @override
   State<StatefulWidget> createState() => new _HomePageState();
 }
 
+enum PageStatus {
+  HOME,
+  GROUPS,
+  VOTES,
+}
+
 class _HomePageState extends State<HomePage> {
+  PageStatus pageStatus;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  get _userInitial =>
+      widget.user != null ? widget.user.displayName.substring(0, 1) : "";
 
   @override
   void initState() {
     super.initState();
+    pageStatus = PageStatus.HOME;
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<bool> _onBackPress() {
+    _askExit();
+    return Future.value(false);
+  }
+
+  Future _askExit() async {
+    switch (await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+              title: new Text('Are you sure to exit app?'),
+              children: <Widget>[
+                new SimpleDialogOption(
+                  child: new Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context, 1);
+                  },
+                ),
+                new SimpleDialogOption(
+                  child: new Text('CANCEL'),
+                  onPressed: () {
+                    Navigator.pop(context, 0);
+                  },
+                )
+              ]);
+        })) {
+      case 1:
+        exit(0);
+        break;
+      case 0:
+        break;
+    }
   }
 
   _signOut() async {
@@ -37,27 +89,98 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _showBody() {
-    return Center(
+    switch (pageStatus) {
+      case PageStatus.HOME:
+        return HomeWidget();
+        break;
+      case PageStatus.GROUPS:
+        return GroupWidget();
+        break;
+      case PageStatus.VOTES:
+        return VoteWidget();
+        break;
+      default:
+        return widget.onWaiting;
+    }
+  }
+
+  Widget _getAccountPIcture() {
+    if (widget.user.photoUrl != null && widget.user.photoUrl.length > 0) {
+      return CircleAvatar(
+          backgroundColor: kPrimary100,
+          backgroundImage: NetworkImage(widget.user.photoUrl));
+    } else {
+      return CircleAvatar(
+        backgroundColor: kPrimary100,
         child: Text(
-      "Welcome. Your list is empty",
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 30.0),
-    ));
+          _userInitial,
+          style: TextStyle(fontSize: 40.0),
+        ),
+      );
+    }
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      child: new Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+              accountName: Text(widget.user.displayName,
+                  style: TextStyle(color: kSurfaceWhite)),
+              accountEmail: Text(widget.user.email,
+                  style: TextStyle(color: kSurfaceWhite)),
+              currentAccountPicture: _getAccountPIcture()),
+          ListTile(
+              title: Text("Home"),
+              trailing: Icon(Icons.home),
+              onTap: () => {
+                    setState(() {
+                      pageStatus = PageStatus.HOME;
+                    }),
+                    Navigator.of(context).pop()
+                  }),
+          ListTile(
+              title: Text("Your Groups"),
+              trailing: Icon(Icons.group_work),
+              onTap: () => {
+                    setState(() {
+                      pageStatus = PageStatus.GROUPS;
+                    }),
+                    Navigator.of(context).pop()
+                  }),
+          ListTile(
+              title: Text("Your Votes"),
+              trailing: Icon(Icons.done),
+              onTap: () => {
+                    setState(() {
+                      pageStatus = PageStatus.VOTES;
+                    }),
+                    Navigator.of(context).pop()
+                  }),
+          Expanded(
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: ListTile(
+                  title: Text("Logout"),
+                  trailing: Icon(Icons.exit_to_app),
+                  onTap: () => {Navigator.of(context).pop(), _signOut()}),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Consensor'),
-          actions: <Widget>[
-            new FlatButton(
-                child: new Text('Logout',
-                    style: new TextStyle(fontSize: 17.0, color: Colors.white)),
-                onPressed: _signOut)
-          ],
-        ),
-        body: _showBody(),
-        floatingActionButton: ActionFab());
+    return WillPopScope(
+        child: Scaffold(
+            appBar: AppBar(
+                title:
+                    Text('Consensor', style: TextStyle(color: kSurfaceWhite))),
+            body: _showBody(),
+            drawer: _buildDrawer()),
+        onWillPop: _onBackPress);
   }
 }

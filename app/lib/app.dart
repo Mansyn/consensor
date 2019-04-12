@@ -16,4 +16,4 @@ class ConsensusApp extends StatelessWidget {
   }
 }
 
-final ThemeData _kConsensorTheme = FartThemeBuilder.build();
+final ThemeData _kConsensorTheme = ConsensorThemeBuilder.build();
