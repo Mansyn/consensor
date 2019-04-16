@@ -110,18 +110,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _showErrorMessage() {
     if (_errorMessage.length > 0 && _errorMessage != null) {
-      return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 20),
-            Text(_errorMessage,
-                style: TextStyle(
-                    fontSize: 15.0,
-                    color: kErrorRed,
-                    height: 1.0,
-                    fontWeight: FontWeight.w300)),
-          ]);
+      return Center(
+          child: Text(_errorMessage,
+              style: TextStyle(
+                  fontSize: 15.0,
+                  color: kErrorRed,
+                  height: 1.0,
+                  fontWeight: FontWeight.w300)));
     } else {
       return Container(
         height: 0.0,
@@ -131,7 +126,12 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _showLoginButtons() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return Center(
+          child: SizedBox(
+        child: CircularProgressIndicator(),
+        height: 100.0,
+        width: 100.0,
+      ));
     }
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,

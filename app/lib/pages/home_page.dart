@@ -48,13 +48,13 @@ class _HomePageState extends State<HomePage> {
   String _resolveSubTitle() {
     switch (pageStatus) {
       case PageStatus.HOME:
-        return " - HOME";
+        return " - Home";
         break;
       case PageStatus.GROUPS:
-        return " - GROUPS";
+        return " - Groups";
         break;
       case PageStatus.VOTES:
-        return " - VOTES";
+        return " - Votes";
         break;
     }
     return null;
@@ -149,37 +149,40 @@ class _HomePageState extends State<HomePage> {
           ListTile(
               title: Text("Home"),
               trailing: Icon(Icons.home),
-              onTap: () => {
-                    setState(() {
-                      pageStatus = PageStatus.HOME;
-                    }),
-                    Navigator.of(context).pop()
-                  }),
+              onTap: () {
+                setState(() {
+                  pageStatus = PageStatus.HOME;
+                });
+                Navigator.of(context).pop();
+              }),
           ListTile(
               title: Text("Your Groups"),
               trailing: Icon(Icons.group_work),
-              onTap: () => {
-                    setState(() {
-                      pageStatus = PageStatus.GROUPS;
-                    }),
-                    Navigator.of(context).pop()
-                  }),
+              onTap: () {
+                setState(() {
+                  pageStatus = PageStatus.GROUPS;
+                });
+                Navigator.of(context).pop();
+              }),
           ListTile(
               title: Text("Your Votes"),
               trailing: Icon(Icons.done),
-              onTap: () => {
-                    setState(() {
-                      pageStatus = PageStatus.VOTES;
-                    }),
-                    Navigator.of(context).pop()
-                  }),
+              onTap: () {
+                setState(() {
+                  pageStatus = PageStatus.VOTES;
+                });
+                Navigator.of(context).pop();
+              }),
           Expanded(
             child: Align(
               alignment: FractionalOffset.bottomCenter,
               child: ListTile(
                   title: Text("Logout"),
                   trailing: Icon(Icons.exit_to_app),
-                  onTap: () => {Navigator.of(context).pop(), _signOut()}),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _signOut();
+                  }),
             ),
           ),
         ],
