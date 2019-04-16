@@ -45,6 +45,21 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  String _resolveSubTitle() {
+    switch (pageStatus) {
+      case PageStatus.HOME:
+        return " - HOME";
+        break;
+      case PageStatus.GROUPS:
+        return " - GROUPS";
+        break;
+      case PageStatus.VOTES:
+        return " - VOTES";
+        break;
+    }
+    return null;
+  }
+
   Future<bool> _onBackPress() {
     _askExit();
     return Future.value(false);
@@ -177,8 +192,8 @@ class _HomePageState extends State<HomePage> {
     return WillPopScope(
         child: Scaffold(
             appBar: AppBar(
-                title:
-                    Text('Consensor', style: TextStyle(color: kSurfaceWhite))),
+                title: Text('Consensor' + _resolveSubTitle(),
+                    style: TextStyle(color: kSurfaceWhite))),
             body: _showBody(),
             drawer: _buildDrawer()),
         onWillPop: _onBackPress);

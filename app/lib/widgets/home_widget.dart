@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 class HomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Text(
-      "Will have current votes here",
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 30.0),
-    ));
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5.0),
+        child: Column(children: <Widget>[Text('To start, create a group')]));
   }
 }

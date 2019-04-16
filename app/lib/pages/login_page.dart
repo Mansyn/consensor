@@ -1,4 +1,5 @@
 import 'package:consensor/theme/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:consensor/services/authentication.dart';
 
@@ -12,7 +13,10 @@ class LoginPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _LoginPageState();
 }
 
+enum OauthProvider { GOOGLE, FACEBOOK }
+
 class _LoginPageState extends State<LoginPage> {
+  OauthProvider _oauthProvider;
   String _errorMessage;
 
   bool _isIos;
@@ -25,18 +29,28 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
-  void _googleSignIn() async {
+  void _signIn(OauthProvider provider) async {
     setState(() {
+      _oauthProvider = provider;
       _errorMessage = "";
       _isLoading = true;
     });
 
+    FirebaseUser _user;
+
     try {
-      var user = await widget.auth.googleSignIn();
+      switch (_oauthProvider) {
+        case OauthProvider.GOOGLE:
+          _user = await widget.auth.googleSignIn();
+          break;
+        case OauthProvider.FACEBOOK:
+          _user = await widget.auth.facebookSignIn();
+          break;
+      }
       setState(() {
         _isLoading = false;
       });
-      if (user != null) {
+      if (_user != null) {
         widget.onSignedIn();
       }
     } on NoSuchMethodError catch (e) {
@@ -88,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                               fontFamily: 'Yatra_One',
                               color: kAccent400))
                     ])),
-            _showGoogleButton(),
+            _showLoginButtons(),
             _showErrorMessage(),
           ],
         ));
@@ -115,20 +129,34 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Widget _showGoogleButton() {
+  Widget _showLoginButtons() {
     if (_isLoading) {
       return Center(child: CircularProgressIndicator());
     }
-    return Center(
-        child: FlatButton.icon(
-      color: Color.fromARGB(255, 245, 245, 245),
-      icon: Image.asset(
-        'assets/google-logo-g.png',
-        height: 20,
-      ),
-      label:
-          Text('Sign in with Google', style: TextStyle(fontFamily: 'Roboto')),
-      onPressed: () => _googleSignIn(),
-    ));
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          FlatButton.icon(
+            color: Color.fromARGB(255, 245, 245, 245),
+            icon: Image.asset(
+              'assets/google-logo-g.png',
+              height: 20,
+            ),
+            label: Text('Sign in with Google',
+                style: TextStyle(fontFamily: 'Roboto')),
+            onPressed: () => _signIn(OauthProvider.GOOGLE),
+          ),
+          FlatButton.icon(
+            color: Color.fromARGB(255, 245, 245, 245),
+            icon: Image.asset(
+              'assets/facebook-logo-f.png',
+              height: 20,
+            ),
+            label: Text('Sign in with Facebook',
+                style: TextStyle(fontFamily: 'Roboto')),
+            onPressed: () => _signIn(OauthProvider.FACEBOOK),
+          )
+        ]);
   }
 }

@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class BaseAuth {
   Future<FirebaseUser> googleSignIn();
+
+  Future<FirebaseUser> facebookSignIn();
 
   updateUserData(FirebaseUser user);
 
@@ -14,6 +17,7 @@ abstract class BaseAuth {
 
 class Auth implements BaseAuth {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FacebookLogin _facebookLogin = FacebookLogin();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Firestore _db = Firestore.instance;
 
@@ -31,6 +35,23 @@ class Auth implements BaseAuth {
 
     print("signed in " + user.displayName);
     return user;
+  }
+
+  Future<FirebaseUser> facebookSignIn() async {
+    FacebookLoginResult result =
+        await _facebookLogin.logInWithReadPermissions(['email']);
+
+    if (result.status == FacebookLoginStatus.loggedIn) {
+      final AuthCredential credential = FacebookAuthProvider.getCredential(
+          accessToken: result.accessToken.token);
+      final FirebaseUser user = await _auth.signInWithCredential(credential);
+
+      updateUserData(user);
+
+      print("signed in " + user.displayName);
+      return user;
+    }
+    return null;
   }
 
   Future<void> updateUserData(FirebaseUser user) async {
@@ -51,8 +72,11 @@ class Auth implements BaseAuth {
   }
 
   Future<void> signOut() async {
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signOut();
+    if (_googleSignIn.currentUser != null) {
+      await _googleSignIn.signOut();
+    } else if (await _facebookLogin.isLoggedIn) {
+      await _facebookLogin.logOut();
+    }
     return _auth.signOut();
   }
 }
