@@ -26,6 +26,7 @@ dependencies:
   cloud_firestore:
   google_sign_in:
   flutter_facebook_login:
+  flutter_chips_input:
 
 dev_dependencies:
   flutter_launcher_icons:

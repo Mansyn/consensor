@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:consensor/models/group.dart';
+import 'package:consensor/pages/group_page.dart';
 import 'package:consensor/theme/colors.dart';
 import 'package:consensor/widgets/group_widget.dart';
 import 'package:consensor/widgets/home_widget.dart';
@@ -109,13 +111,45 @@ class _HomePageState extends State<HomePage> {
         return HomeWidget();
         break;
       case PageStatus.GROUPS:
-        return GroupWidget();
+        return GroupWidget(widget.user);
         break;
       case PageStatus.VOTES:
         return VoteWidget();
         break;
       default:
         return widget.onWaiting;
+    }
+  }
+
+  void _createNewGroup(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              GroupPage(Group(null, '', widget.user.uid, List()), widget.user)),
+    );
+  }
+
+  Widget _showFloatingAction() {
+    switch (pageStatus) {
+      case PageStatus.HOME:
+        return null;
+        break;
+      case PageStatus.GROUPS:
+        return FloatingActionButton(
+          child: Icon(Icons.add),
+          tooltip: "Create New Group",
+          onPressed: () => _createNewGroup(context),
+        );
+        break;
+      case PageStatus.VOTES:
+        return FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () => {},
+        );
+        break;
+      default:
+        return null;
     }
   }
 
@@ -198,7 +232,8 @@ class _HomePageState extends State<HomePage> {
                 title: Text('Consensor' + _resolveSubTitle(),
                     style: TextStyle(color: kSurfaceWhite))),
             body: _showBody(),
-            drawer: _buildDrawer()),
+            drawer: _buildDrawer(),
+            floatingActionButton: _showFloatingAction()),
         onWillPop: _onBackPress);
   }
 }
