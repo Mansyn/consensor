@@ -28,6 +28,7 @@ class _GroupPageState extends State<GroupPage> {
   List<User> _allUsers;
   List<User> _currentUsers;
   List<String> _selectedUsers;
+  String _ownerId;
   String _errorMsg;
 
   StreamSubscription<QuerySnapshot> _userSub;
@@ -44,6 +45,7 @@ class _GroupPageState extends State<GroupPage> {
     _allUsers = List();
     _currentUsers = List();
     _selectedUsers = List();
+    _ownerId = widget.user.uid;
     _errorMsg = "";
 
     _titleController = TextEditingController(text: widget.group.title);
@@ -53,25 +55,36 @@ class _GroupPageState extends State<GroupPage> {
       List<User> allUsers = snapshot.documents
           .map((documentSnapshot) => User.fromMap(documentSnapshot.data))
           .toList();
-      List<User> currentUsers = List();
 
-      var user = allUsers.firstWhere((_user) => _user.id == widget.user.uid);
-      allUsers.remove(user);
-
-      widget.group.members.forEach((userId) {
-        var foundUser = allUsers.firstWhere((_user) => _user.id == userId,
-            orElse: () => null);
-        if (foundUser != null) {
-          currentUsers.add(foundUser);
-          allUsers.remove(foundUser);
-        }
-      });
+      var owner = allUsers.firstWhere((_user) => _user.id == widget.user.uid);
+      allUsers.remove(owner);
 
       setState(() {
+        this._ownerId = owner.id;
         this._allUsers = allUsers;
-        this._currentUsers = currentUsers;
-        this._isLoaded = true;
       });
+
+      this._syncUsers(widget.group.members);
+    });
+  }
+
+  void _syncUsers(List<String> userids) {
+    List<User> currentUsers = List();
+
+    userids.forEach((userId) {
+      var foundUser = this
+          ._allUsers
+          .firstWhere((_user) => _user.id == userId, orElse: () => null);
+      if (foundUser != null) {
+        currentUsers.add(foundUser);
+      }
+    });
+
+    setState(() {
+      this._currentUsers = currentUsers;
+      this._selectedUsers = currentUsers.map((n) => n.id).toList();
+      this._errorMsg = "";
+      this._isLoaded = true;
     });
   }
 
@@ -142,11 +155,8 @@ class _GroupPageState extends State<GroupPage> {
                       onChanged: (data) {
                         // sync selected and available users
                         var selectedUsers = List<User>.from(data);
-                        setState(() {
-                          _selectedUsers =
-                              selectedUsers.map((n) => n.id).toList();
-                          _errorMsg = "";
-                        });
+                        this._syncUsers(
+                            selectedUsers.map((n) => n.id).toList());
                       },
                       chipBuilder: (context, state, user) {
                         return InputChip(
@@ -175,8 +185,8 @@ class _GroupPageState extends State<GroupPage> {
                   Padding(padding: EdgeInsets.all(5.0)),
                   RaisedButton(
                     child: (widget.group.id != null)
-                        ? Text('Update')
-                        : Text('Add'),
+                        ? Text('Update', style: TextStyle(color: kSurfaceWhite))
+                        : Text('Add', style: TextStyle(color: kSurfaceWhite)),
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         if (_selectedUsers.length == 0) {
@@ -189,7 +199,7 @@ class _GroupPageState extends State<GroupPage> {
                                 .updateGroup(Group(
                                     widget.group.id,
                                     _titleController.text,
-                                    widget.user.uid,
+                                    this._ownerId,
                                     _selectedUsers))
                                 .then((_) {
                               Navigator.pop(context);
@@ -197,7 +207,7 @@ class _GroupPageState extends State<GroupPage> {
                           } else {
                             _groupSvc
                                 .createGroup(_titleController.text,
-                                    widget.user.uid, _selectedUsers)
+                                    this._ownerId, _selectedUsers)
                                 .then((_) {
                               Navigator.pop(context);
                             });

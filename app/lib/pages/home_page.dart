@@ -53,10 +53,10 @@ class _HomePageState extends State<HomePage> {
         return " - Home";
         break;
       case PageStatus.GROUPS:
-        return " - Groups";
+        return " - Your Groups";
         break;
       case PageStatus.VOTES:
-        return " - Votes";
+        return " - Vote";
         break;
     }
     return null;
@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
         return GroupWidget(widget.user);
         break;
       case PageStatus.VOTES:
-        return VoteWidget();
+        return VoteWidget(widget.user);
         break;
       default:
         return widget.onWaiting;

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:consensor/models/group.dart';
 import 'package:consensor/pages/group_page.dart';
 import 'package:consensor/services/groups.dart';
+import 'package:consensor/theme/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -42,57 +43,60 @@ class _GroupWidgetState extends State<GroupWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5.0),
-        child: Center(
-          child: ListView.builder(
-              itemCount: _items.length,
-              padding: const EdgeInsets.all(15.0),
-              itemBuilder: (context, position) {
-                return Column(
-                  children: <Widget>[
-                    Divider(height: 5.0),
-                    ListTile(
-                      title: Text(
-                        '${_items[position].title}',
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          color: Colors.deepOrangeAccent,
+    if (_items.length > 0) {
+      return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5.0),
+          child: Center(
+            child: ListView.builder(
+                itemCount: _items.length,
+                padding: const EdgeInsets.all(15.0),
+                itemBuilder: (context, position) {
+                  return Column(
+                    children: <Widget>[
+                      Divider(height: 5.0),
+                      ListTile(
+                        title: Text(
+                          '${_items[position].title}',
+                          style: TextStyle(fontSize: 26.0),
                         ),
-                      ),
-                      subtitle: Text(
-                        '# of people ${_items[position].members.length}',
-                        style: new TextStyle(
-                          fontSize: 18.0,
-                          fontStyle: FontStyle.italic,
+                        subtitle: Text(
+                          '# of people ${_items[position].members.length}',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
-                      ),
-                      leading: Column(
-                        children: <Widget>[
-                          Padding(padding: EdgeInsets.all(10.0)),
-                          CircleAvatar(
-                            backgroundColor: Colors.blueAccent,
-                            radius: 15.0,
-                            child: Text(
-                              '${position + 1}',
-                              style: TextStyle(
-                                fontSize: 22.0,
-                                color: Colors.white,
+                        leading: Column(
+                          children: <Widget>[
+                            Padding(padding: EdgeInsets.all(10.0)),
+                            CircleAvatar(
+                              backgroundColor: kPrimary50,
+                              radius: 15.0,
+                              child: Text(
+                                '${position + 1}',
+                                style: TextStyle(
+                                  fontSize: 22.0,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                          IconButton(
-                              icon: const Icon(Icons.remove_circle_outline),
-                              onPressed: () => _deleteNote(
-                                  context, _items[position], position)),
-                        ],
+                            IconButton(
+                                icon: const Icon(Icons.remove_circle_outline),
+                                onPressed: () => _deleteNote(
+                                    context, _items[position], position)),
+                          ],
+                        ),
+                        onTap: () => _navigateToNote(context, _items[position]),
                       ),
-                      onTap: () => _navigateToNote(context, _items[position]),
-                    ),
-                  ],
-                );
-              }),
-        ));
+                    ],
+                  );
+                }),
+          ));
+    } else {
+      return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5.0),
+          child: Center(child: Text('Create a group to get started')));
+    }
   }
 
   void _deleteNote(BuildContext context, Group group, int position) async {
