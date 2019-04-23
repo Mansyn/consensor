@@ -9,8 +9,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class GroupWidget extends StatefulWidget {
-  GroupWidget(this.user);
+  GroupWidget(this.user, this.onWaiting);
 
+  final Widget onWaiting;
   final FirebaseUser user;
 
   @override
@@ -30,7 +31,9 @@ class _GroupWidgetState extends State<GroupWidget> {
     _items = new List();
 
     _groupSub?.cancel();
-    _groupSub = _groupSvc.getGroupList().listen((QuerySnapshot snapshot) {
+    _groupSub = _groupSvc
+        .getGroupList(widget.user.uid)
+        .listen((QuerySnapshot snapshot) {
       final List<Group> groups = snapshot.documents
           .map((documentSnapshot) => Group.fromMap(documentSnapshot.data))
           .toList();
@@ -57,10 +60,10 @@ class _GroupWidgetState extends State<GroupWidget> {
                       ListTile(
                         title: Text(
                           '${_items[position].title}',
-                          style: TextStyle(fontSize: 26.0),
+                          style: TextStyle(fontSize: 28.0),
                         ),
                         subtitle: Text(
-                          '# of people ${_items[position].members.length}',
+                          'created on ${_items[position].createdOn()}',
                           style: TextStyle(
                             fontSize: 18.0,
                             fontStyle: FontStyle.italic,
@@ -110,7 +113,9 @@ class _GroupWidgetState extends State<GroupWidget> {
   void _navigateToNote(BuildContext context, Group group) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => GroupPage(group, widget.user)),
+      MaterialPageRoute(
+          builder: (context) =>
+              GroupPage(group, widget.user, widget.onWaiting)),
     );
   }
 

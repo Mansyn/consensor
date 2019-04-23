@@ -9,8 +9,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class VoteWidget extends StatefulWidget {
-  VoteWidget(this.user);
+  VoteWidget(this.user, this.onWaiting);
 
+  final Widget onWaiting;
   final FirebaseUser user;
 
   @override
@@ -110,7 +111,8 @@ class _VoteWidgetState extends State<VoteWidget> {
   void _navigateToVote(BuildContext context, Vote vote) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => VotePage(vote, widget.user)),
+      MaterialPageRoute(
+          builder: (context) => VotePage(vote, widget.user, widget.onWaiting)),
     );
   }
 

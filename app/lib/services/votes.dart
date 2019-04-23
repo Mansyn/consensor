@@ -13,12 +13,12 @@ class VoteService {
   VoteService.internal();
 
   Future<Vote> createVote(String ownerId, String topic, String groupId,
-      List<String> options) async {
+      List<String> options, DateTime expires, DateTime now) async {
     final TransactionHandler createTransaction = (Transaction tx) async {
       final DocumentSnapshot ds = await tx.get(voteCollection.document());
 
-      final Vote vote =
-          new Vote(ds.documentID, ownerId, topic, groupId, options);
+      final Vote vote = new Vote(
+          ds.documentID, ownerId, topic, groupId, options, expires, now);
       final Map<String, dynamic> data = vote.toMap();
 
       await tx.set(ds.reference, data);

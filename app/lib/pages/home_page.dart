@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:consensor/models/group.dart';
+import 'package:consensor/models/vote.dart';
 import 'package:consensor/pages/group_page.dart';
+import 'package:consensor/pages/vote_page.dart';
 import 'package:consensor/theme/colors.dart';
 import 'package:consensor/widgets/group_widget.dart';
 import 'package:consensor/widgets/home_widget.dart';
@@ -111,10 +113,10 @@ class _HomePageState extends State<HomePage> {
         return HomeWidget();
         break;
       case PageStatus.GROUPS:
-        return GroupWidget(widget.user);
+        return GroupWidget(widget.user, widget.onWaiting);
         break;
       case PageStatus.VOTES:
-        return VoteWidget(widget.user);
+        return VoteWidget(widget.user, widget.onWaiting);
         break;
       default:
         return widget.onWaiting;
@@ -125,8 +127,22 @@ class _HomePageState extends State<HomePage> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              GroupPage(Group(null, '', widget.user.uid, List()), widget.user)),
+          builder: (context) => GroupPage(
+              Group(null, '', widget.user.uid, List(), DateTime.now()),
+              widget.user,
+              widget.onWaiting)),
+    );
+  }
+
+  void _createNewVote(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => VotePage(
+              Vote(null, widget.user.uid, '', '', List(), DateTime.now(),
+                  DateTime.now()),
+              widget.user,
+              widget.onWaiting)),
     );
   }
 
@@ -145,7 +161,8 @@ class _HomePageState extends State<HomePage> {
       case PageStatus.VOTES:
         return FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () => {},
+          tooltip: "Create New Vote",
+          onPressed: () => _createNewVote(context),
         );
         break;
       default:

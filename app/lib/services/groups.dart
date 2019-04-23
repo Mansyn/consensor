@@ -13,11 +13,11 @@ class GroupService {
   GroupService.internal();
 
   Future<Group> createGroup(
-      String title, String ownerId, List<String> members) async {
+      String title, String ownerId, List<String> members, DateTime now) async {
     final TransactionHandler createTransaction = (Transaction tx) async {
       final DocumentSnapshot ds = await tx.get(groupCollection.document());
 
-      final Group group = new Group(ds.documentID, title, ownerId, members);
+      final Group group = Group(ds.documentID, title, ownerId, members, now);
       final Map<String, dynamic> data = group.toMap();
 
       await tx.set(ds.reference, data);
@@ -33,8 +33,13 @@ class GroupService {
     });
   }
 
-  Stream<QuerySnapshot> getGroupList({int offset, int limit}) {
-    Stream<QuerySnapshot> snapshots = groupCollection.snapshots();
+  Future<DocumentReference> getGroup(String uid) async {
+    return groupCollection.document(uid);
+  }
+
+  Stream<QuerySnapshot> getGroupList(String ownerId, [int offset, int limit]) {
+    Stream<QuerySnapshot> snapshots =
+        groupCollection.where('ownerId', isEqualTo: ownerId).snapshots();
 
     if (offset != null) {
       snapshots = snapshots.skip(offset);

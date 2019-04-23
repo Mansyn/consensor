@@ -8,11 +8,13 @@ import 'package:consensor/services/users.dart';
 import 'package:consensor/theme/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 
 class GroupPage extends StatefulWidget {
-  GroupPage(this.group, this.user);
+  GroupPage(this.group, this.user, this.onWaiting);
 
+  final Widget onWaiting;
   final Group group;
   final FirebaseUser user;
 
@@ -21,6 +23,8 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
+  final _formKey = GlobalKey<FormState>();
+
   GroupService _groupSvc = GroupService();
   UserService _userSvc = UserService();
 
@@ -31,10 +35,9 @@ class _GroupPageState extends State<GroupPage> {
   String _ownerId;
   String _errorMsg;
 
-  StreamSubscription<QuerySnapshot> _userSub;
-
-  final _formKey = GlobalKey<FormState>();
   TextEditingController _titleController;
+
+  StreamSubscription<QuerySnapshot> _userSub;
 
   @override
   void initState() {
@@ -46,9 +49,8 @@ class _GroupPageState extends State<GroupPage> {
     _currentUsers = List();
     _selectedUsers = List();
     _ownerId = widget.user.uid;
-    _errorMsg = "";
-
     _titleController = TextEditingController(text: widget.group.title);
+    _errorMsg = "";
 
     _userSub?.cancel();
     _userSub = _userSvc.getUserList().listen((QuerySnapshot snapshot) {
@@ -94,25 +96,13 @@ class _GroupPageState extends State<GroupPage> {
     super.dispose();
   }
 
-  Widget _buildWaitingScreen() {
-    return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        child: SizedBox(
-          child: CircularProgressIndicator(),
-          height: 150.0,
-          width: 150.0,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_isLoaded) {
       return Scaffold(
         appBar: AppBar(
-            title: Text('Group', style: TextStyle(color: kSurfaceWhite))),
+            title:
+                Text('Create Group', style: TextStyle(color: kSurfaceWhite))),
         body: Container(
           margin: EdgeInsets.all(15.0),
           alignment: Alignment.center,
@@ -120,14 +110,18 @@ class _GroupPageState extends State<GroupPage> {
               key: _formKey,
               child: Column(
                 children: <Widget>[
-                  TextFormField(
+                  new TextFormField(
+                      decoration: const InputDecoration(
+                        icon: const Icon(Icons.group),
+                        hintText: 'Please name your group',
+                        labelText: 'Name',
+                      ),
                       controller: _titleController,
-                      decoration: InputDecoration(labelText: 'Name'),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please name your group';
-                        }
-                      }),
+                      inputFormatters: [
+                        new LengthLimitingTextInputFormatter(30)
+                      ],
+                      validator: (val) =>
+                          val.isEmpty ? 'Name is required' : null),
                   Padding(padding: EdgeInsets.all(5.0)),
                   ChipsInput(
                       initialValue: _currentUsers,
@@ -200,14 +194,18 @@ class _GroupPageState extends State<GroupPage> {
                                     widget.group.id,
                                     _titleController.text,
                                     this._ownerId,
-                                    _selectedUsers))
+                                    _selectedUsers,
+                                    new DateTime.now()))
                                 .then((_) {
                               Navigator.pop(context);
                             });
                           } else {
                             _groupSvc
-                                .createGroup(_titleController.text,
-                                    this._ownerId, _selectedUsers)
+                                .createGroup(
+                                    _titleController.text,
+                                    this._ownerId,
+                                    _selectedUsers,
+                                    new DateTime.now())
                                 .then((_) {
                               Navigator.pop(context);
                             });
@@ -221,7 +219,7 @@ class _GroupPageState extends State<GroupPage> {
         ),
       );
     } else {
-      return _buildWaitingScreen();
+      return widget.onWaiting;
     }
   }
 }
