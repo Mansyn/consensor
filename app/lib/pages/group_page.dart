@@ -110,71 +110,76 @@ class _GroupPageState extends State<GroupPage> {
               key: _formKey,
               child: Column(
                 children: <Widget>[
-                  new TextFormField(
+                  TextFormField(
                       decoration: const InputDecoration(
-                        icon: const Icon(Icons.group),
+                        icon: const Icon(Icons.chat, color: kAccent400),
                         hintText: 'Please name your group',
                         labelText: 'Name',
                       ),
                       controller: _titleController,
-                      inputFormatters: [
-                        new LengthLimitingTextInputFormatter(30)
-                      ],
+                      inputFormatters: [LengthLimitingTextInputFormatter(30)],
                       validator: (val) =>
                           val.isEmpty ? 'Name is required' : null),
-                  Padding(padding: EdgeInsets.all(5.0)),
-                  ChipsInput(
-                      initialValue: _currentUsers,
-                      decoration: InputDecoration(
-                        labelText: "People",
+                  Row(
+                    children: <Widget>[
+                      const Icon(Icons.people, color: kAccent400),
+                      Padding(padding: EdgeInsets.all(8.0)),
+                      Expanded(
+                        child: ChipsInput(
+                            initialValue: _currentUsers,
+                            decoration: InputDecoration(
+                              labelText: "People",
+                            ),
+                            findSuggestions: (String query) {
+                              if (query.length != 0) {
+                                var lowercaseQuery = query.toLowerCase();
+                                return _allUsers.where((user) {
+                                  return user.displayName
+                                      .toLowerCase()
+                                      .contains(query.toLowerCase());
+                                }).toList(growable: false)
+                                  ..sort((a, b) => a.displayName
+                                      .toLowerCase()
+                                      .indexOf(lowercaseQuery)
+                                      .compareTo(b.displayName
+                                          .toLowerCase()
+                                          .indexOf(lowercaseQuery)));
+                              } else {
+                                return const <User>[];
+                              }
+                            },
+                            onChanged: (data) {
+                              // sync selected and available users
+                              var selectedUsers = List<User>.from(data);
+                              this._syncUsers(
+                                  selectedUsers.map((n) => n.id).toList());
+                            },
+                            chipBuilder: (context, state, user) {
+                              return InputChip(
+                                key: ObjectKey(user),
+                                label: Text(user.displayName),
+                                avatar: CircleAvatar(
+                                  backgroundImage: NetworkImage(user.photoURL),
+                                ),
+                                onDeleted: () => state.deleteChip(user),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              );
+                            },
+                            suggestionBuilder: (context, state, user) {
+                              return ListTile(
+                                key: ObjectKey(user),
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(user.photoURL),
+                                ),
+                                title: Text(user.displayName),
+                                subtitle: Text(user.email),
+                                onTap: () => state.selectSuggestion(user),
+                              );
+                            }),
                       ),
-                      findSuggestions: (String query) {
-                        if (query.length != 0) {
-                          var lowercaseQuery = query.toLowerCase();
-                          return _allUsers.where((user) {
-                            return user.displayName
-                                .toLowerCase()
-                                .contains(query.toLowerCase());
-                          }).toList(growable: false)
-                            ..sort((a, b) => a.displayName
-                                .toLowerCase()
-                                .indexOf(lowercaseQuery)
-                                .compareTo(b.displayName
-                                    .toLowerCase()
-                                    .indexOf(lowercaseQuery)));
-                        } else {
-                          return const <User>[];
-                        }
-                      },
-                      onChanged: (data) {
-                        // sync selected and available users
-                        var selectedUsers = List<User>.from(data);
-                        this._syncUsers(
-                            selectedUsers.map((n) => n.id).toList());
-                      },
-                      chipBuilder: (context, state, user) {
-                        return InputChip(
-                          key: ObjectKey(user),
-                          label: Text(user.displayName),
-                          avatar: CircleAvatar(
-                            backgroundImage: NetworkImage(user.photoURL),
-                          ),
-                          onDeleted: () => state.deleteChip(user),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        );
-                      },
-                      suggestionBuilder: (context, state, user) {
-                        return ListTile(
-                          key: ObjectKey(user),
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(user.photoURL),
-                          ),
-                          title: Text(user.displayName),
-                          subtitle: Text(user.email),
-                          onTap: () => state.selectSuggestion(user),
-                        );
-                      }),
+                    ],
+                  ),
                   Text(_errorMsg, style: TextStyle(color: kErrorRed)),
                   Padding(padding: EdgeInsets.all(5.0)),
                   RaisedButton(

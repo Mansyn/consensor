@@ -1,9 +1,15 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:consensor/models/group.dart';
 import 'package:consensor/models/vote.dart';
 import 'package:consensor/services/groups.dart';
 import 'package:consensor/services/votes.dart';
 import 'package:consensor/theme/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class VotePage extends StatefulWidget {
   VotePage(this.vote, this.user, this.onWaiting);
@@ -26,21 +32,87 @@ class _VotePageState extends State<VotePage> {
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController _topicController;
-  String _selectedGroupId;
+  TextEditingController _expireController;
 
-  List<String> _colors = <String>['', 'red', 'green', 'blue', 'orange'];
+  StreamSubscription<QuerySnapshot> _groupSub;
+  List<Group> _userGroups;
+  String _selectedGroupId;
 
   @override
   void initState() {
-    _isLoaded = true;
-
+    this._isLoaded = false;
+    this._userGroups = List();
     super.initState();
 
-    _ownerId = widget.user.uid;
+    _topicController = TextEditingController(text: widget.vote.topic);
+    _expireController = TextEditingController(
+        text: DateFormat.yMd().add_jm().format(widget.vote.expirationDate));
     _errorMsg = "";
 
-    _topicController = TextEditingController(text: widget.vote.topic);
-    _selectedGroupId = widget.vote.groupId;
+    _groupSub?.cancel();
+    _groupSub = _groupSvc
+        .getGroupList(widget.user.uid)
+        .listen((QuerySnapshot snapshot) {
+      final List<Group> groups = snapshot.documents
+          .map((documentSnapshot) => Group.fromMap(documentSnapshot.data))
+          .toList();
+
+      var foundGroup = groups.firstWhere(
+          (_group) => _group.id == widget.vote.groupId,
+          orElse: () => null);
+
+      setState(() {
+        this._ownerId = widget.user.uid;
+        this._userGroups = groups;
+        this._selectedGroupId = foundGroup?.id;
+        this._isLoaded = true;
+      });
+    });
+  }
+
+  DateTime convertToDate(String input) {
+    try {
+      var d = DateFormat.yMd().add_jm().parseStrict(input);
+      return d;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  bool isValidExpiration(String dob) {
+    if (dob.isEmpty) return true;
+    var d = convertToDate(dob);
+    return d != null && d.isAfter(DateTime.now());
+  }
+
+  Future _chooseExpirationDate(
+      BuildContext context, String initialDateString) async {
+    var now = DateTime.now();
+    var initialDate = convertToDate(initialDateString) ?? now;
+    initialDate = (initialDate.year <= 2099 && initialDate.isAfter(now)
+        ? initialDate
+        : now);
+
+    var dateResult = await showDatePicker(
+        context: context,
+        initialDate: initialDate,
+        firstDate: now,
+        lastDate: DateTime(2099));
+
+    if (dateResult == null) return;
+
+    var timeResult = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initialDate),
+    );
+
+    if (timeResult == null) return;
+
+    var newDate = DateTime(dateResult.year, dateResult.month, dateResult.day,
+        timeResult.hour, timeResult.minute);
+    setState(() {
+      _expireController.text = DateFormat.yMd().add_jm().format(newDate);
+    });
   }
 
   @override
@@ -63,30 +135,26 @@ class _VotePageState extends State<VotePage> {
               child: Column(
                 children: <Widget>[
                   TextFormField(
-                      controller: _topicController,
-                      decoration: InputDecoration(labelText: 'Name'),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please name your vote';
-                        }
-                      }),
-                  TextFormField(
                     decoration: const InputDecoration(
-                      icon: const Icon(Icons.chat),
+                      icon: const Icon(Icons.chat, color: kAccent400),
                       hintText: 'What do you want to vote on',
                       labelText: 'Topic',
                     ),
+                    inputFormatters: [LengthLimitingTextInputFormatter(30)],
+                    validator: (val) =>
+                        val.isEmpty ? 'Topic is required' : null,
+                    controller: _topicController,
                   ),
                   FormField(
                     builder: (FormFieldState state) {
                       return InputDecorator(
                         decoration: InputDecoration(
-                          icon: const Icon(Icons.color_lens),
+                          icon: const Icon(Icons.color_lens, color: kAccent400),
                           labelText: 'Group',
                         ),
                         isEmpty: _selectedGroupId == '',
-                        child: new DropdownButtonHideUnderline(
-                          child: new DropdownButton(
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
                             value: _selectedGroupId,
                             isDense: true,
                             onChanged: (String newValue) {
@@ -95,10 +163,10 @@ class _VotePageState extends State<VotePage> {
                                 state.didChange(newValue);
                               });
                             },
-                            items: _colors.map((String value) {
-                              return new DropdownMenuItem(
-                                value: value,
-                                child: new Text(value),
+                            items: _userGroups.map((Group _group) {
+                              return DropdownMenuItem(
+                                value: _group.id,
+                                child: Text(_group.title),
                               );
                             }).toList(),
                           ),
@@ -106,6 +174,30 @@ class _VotePageState extends State<VotePage> {
                       );
                     },
                   ),
+                  Row(children: <Widget>[
+                    Expanded(
+                        child: TextFormField(
+                      decoration: InputDecoration(
+                        icon:
+                            const Icon(Icons.calendar_today, color: kAccent400),
+                        hintText: 'Enter your when vote expires',
+                        labelText: 'End of vote',
+                      ),
+                      enabled: false,
+                      controller: _expireController,
+                      keyboardType: TextInputType.datetime,
+                      validator: (val) => isValidExpiration(val)
+                          ? null
+                          : 'Not a valid, future date',
+                    )),
+                    IconButton(
+                      icon: Icon(Icons.more_vert, color: kText),
+                      tooltip: 'Choose date',
+                      onPressed: (() {
+                        _chooseExpirationDate(context, _expireController.text);
+                      }),
+                    )
+                  ]),
                   Text(_errorMsg, style: TextStyle(color: kErrorRed)),
                   Padding(padding: EdgeInsets.all(5.0)),
                   RaisedButton(
@@ -115,30 +207,9 @@ class _VotePageState extends State<VotePage> {
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         if (widget.vote.id != null) {
-                          _voteSvc
-                              .updateVote(Vote(
-                                  widget.vote.id,
-                                  this._ownerId,
-                                  _topicController.text,
-                                  widget.vote.groupId,
-                                  widget.vote.options,
-                                  DateTime.now(),
-                                  DateTime.now()))
-                              .then((_) {
-                            Navigator.pop(context);
-                          });
+                          Navigator.pop(context);
                         } else {
-                          _voteSvc
-                              .createVote(
-                                  this._ownerId,
-                                  _topicController.text,
-                                  widget.vote.groupId,
-                                  widget.vote.options,
-                                  DateTime.now(),
-                                  DateTime.now())
-                              .then((_) {
-                            Navigator.pop(context);
-                          });
+                          Navigator.pop(context);
                         }
                       }
                     },

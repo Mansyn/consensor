@@ -54,41 +54,52 @@ class _VoteWidgetState extends State<VoteWidget> {
                 itemBuilder: (context, position) {
                   return Column(
                     children: <Widget>[
-                      Divider(height: 5.0),
-                      ListTile(
-                        title: Text(
-                          '${_items[position].topic}',
-                          style: TextStyle(fontSize: 26.0),
-                        ),
-                        subtitle: Text(
-                          '# of people ${_items[position].ownerId}',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        leading: Column(
+                      Card(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Padding(padding: EdgeInsets.all(10.0)),
-                            CircleAvatar(
-                              backgroundColor: kPrimary50,
-                              radius: 15.0,
-                              child: Text(
-                                '${position + 1}',
-                                style: TextStyle(
-                                  fontSize: 22.0,
-                                  color: Colors.white,
+                            ListTile(
+                                leading: Icon(Icons.done),
+                                title: Text(
+                                  '${_items[position].topic}',
+                                  style: TextStyle(fontSize: 22.0),
                                 ),
+                                subtitle: Text(
+                                    'expires on ${_items[position].expiresOn()}'),
+                                trailing: IconButton(
+                                    icon:
+                                        const Icon(Icons.remove_circle_outline),
+                                    onPressed: () => _deleteVote(
+                                        context, _items[position], position)),
+                                onTap: () {/* set topic */}),
+                            ButtonTheme.bar(
+                              child: ButtonBar(
+                                children: <Widget>[
+                                  FlatButton(
+                                    child: Text('OPTIONS'),
+                                    onPressed: () {/* ... */},
+                                  ),
+                                  FlatButton(
+                                    child: Text('GROUP'),
+                                    onPressed: () {/* ... */},
+                                  ),
+                                  FlatButton(
+                                    child: Text('EXPIRATION'),
+                                    onPressed: () {/* ... */},
+                                  ),
+                                  FlatButton(
+                                    child: Text(_items[position].enabled
+                                        ? 'STOP'
+                                        : 'START'),
+                                    onPressed: () {/* ... */},
+                                  ),
+                                ],
                               ),
                             ),
-                            IconButton(
-                                icon: const Icon(Icons.remove_circle_outline),
-                                onPressed: () => _deleteVote(
-                                    context, _items[position], position)),
                           ],
                         ),
-                        onTap: () => _navigateToVote(context, _items[position]),
                       ),
+                      Padding(padding: EdgeInsets.all(5.0)),
                     ],
                   );
                 }),

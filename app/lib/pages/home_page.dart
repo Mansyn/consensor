@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:consensor/models/group.dart';
-import 'package:consensor/models/vote.dart';
 import 'package:consensor/pages/group_page.dart';
-import 'package:consensor/pages/vote_page.dart';
+import 'package:consensor/services/votes.dart';
 import 'package:consensor/theme/colors.dart';
 import 'package:consensor/widgets/group_widget.dart';
 import 'package:consensor/widgets/home_widget.dart';
@@ -34,6 +33,7 @@ enum PageStatus {
 class _HomePageState extends State<HomePage> {
   PageStatus pageStatus;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  VoteService _voteSvc = new VoteService();
 
   get _userInitial =>
       widget.user != null ? widget.user.displayName.substring(0, 1) : "";
@@ -135,15 +135,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _createNewVote(BuildContext context) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => VotePage(
-              Vote(null, widget.user.uid, '', '', List(), DateTime.now(),
-                  DateTime.now()),
-              widget.user,
-              widget.onWaiting)),
-    );
+    await _voteSvc.createVote(widget.user.uid, "New vote", "", List(),
+        DateTime.now().add(Duration(days: 5)), false, DateTime.now());
   }
 
   Widget _showFloatingAction() {
@@ -153,6 +146,7 @@ class _HomePageState extends State<HomePage> {
         break;
       case PageStatus.GROUPS:
         return FloatingActionButton(
+          backgroundColor: kAccent100,
           child: Icon(Icons.add),
           tooltip: "Create New Group",
           onPressed: () => _createNewGroup(context),
@@ -160,6 +154,7 @@ class _HomePageState extends State<HomePage> {
         break;
       case PageStatus.VOTES:
         return FloatingActionButton(
+          backgroundColor: kAccent100,
           child: Icon(Icons.add),
           tooltip: "Create New Vote",
           onPressed: () => _createNewVote(context),
@@ -198,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(color: kSurfaceWhite)),
               currentAccountPicture: _getAccountPIcture()),
           ListTile(
-              title: Text("Home"),
+              title: Text("Home", style: TextStyle(color: kSurfaceWhite)),
               trailing: Icon(Icons.home),
               onTap: () {
                 setState(() {
@@ -207,7 +202,8 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).pop();
               }),
           ListTile(
-              title: Text("Your Groups"),
+              title:
+                  Text("Your Groups", style: TextStyle(color: kSurfaceWhite)),
               trailing: Icon(Icons.group_work),
               onTap: () {
                 setState(() {
@@ -216,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).pop();
               }),
           ListTile(
-              title: Text("Your Votes"),
+              title: Text("Your Votes", style: TextStyle(color: kSurfaceWhite)),
               trailing: Icon(Icons.done),
               onTap: () {
                 setState(() {
@@ -228,7 +224,7 @@ class _HomePageState extends State<HomePage> {
             child: Align(
               alignment: FractionalOffset.bottomCenter,
               child: ListTile(
-                  title: Text("Logout"),
+                  title: Text("Logout", style: TextStyle(color: kSurfaceWhite)),
                   trailing: Icon(Icons.exit_to_app),
                   onTap: () {
                     Navigator.of(context).pop();

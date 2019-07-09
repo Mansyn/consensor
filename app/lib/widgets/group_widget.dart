@@ -91,6 +91,7 @@ class _GroupWidgetState extends State<GroupWidget> {
                         ),
                         onTap: () => _navigateToNote(context, _items[position]),
                       ),
+                      Padding(padding: EdgeInsets.all(5.0)),
                     ],
                   );
                 }),

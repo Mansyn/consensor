@@ -8,10 +8,11 @@ class Vote {
   String _groupId;
   List<String> _options;
   DateTime _expirationDate;
+  bool _enabled;
   DateTime _createdDate;
 
   Vote(this._id, this._ownerId, this._topic, this._groupId, this._options,
-      this._expirationDate, this._createdDate);
+      this._expirationDate, this._enabled, this._createdDate);
 
   Vote.map(dynamic obj) {
     this._id = obj['id'];
@@ -19,6 +20,7 @@ class Vote {
     this._topic = obj['topic'];
     this._groupId = obj['groupId'];
     this._expirationDate = obj['expirationDate'];
+    this._enabled = obj['enabled'];
     this._createdDate = obj['createdDate'];
   }
 
@@ -28,6 +30,7 @@ class Vote {
   String get groupId => _groupId;
   List<String> get options => _options;
   DateTime get expirationDate => _expirationDate;
+  bool get enabled => _enabled;
   DateTime get createdDate => _createdDate;
 
   Map<String, dynamic> toMap() {
@@ -40,6 +43,7 @@ class Vote {
     map['groupId'] = _groupId;
     map['options'] = _options;
     map['expirationDate'] = _expirationDate;
+    map['enabled'] = _enabled;
     map['createdDate'] = _createdDate;
     return map;
   }
@@ -53,6 +57,7 @@ class Vote {
     Timestamp expirationDate = map['expirationDate'];
     this._expirationDate = expirationDate.toDate();
     Timestamp createdDate = map['createdDate'];
+    this._enabled = map['enabled'];
     this._createdDate = createdDate.toDate();
   }
 
@@ -61,6 +66,6 @@ class Vote {
   }
 
   expiresOn() {
-    return DateFormat.yMMMd().format(this._expirationDate);
+    return DateFormat.yMd().add_jm().format(this._expirationDate);
   }
 }

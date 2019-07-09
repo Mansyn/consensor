@@ -24,7 +24,7 @@ dependencies:
   intl:
   firebase_core: 
   firebase_auth:
-  cloud_firestore:
+  cloud_firestore: 
   google_sign_in:
   flutter_facebook_login:
   flutter_chips_input:

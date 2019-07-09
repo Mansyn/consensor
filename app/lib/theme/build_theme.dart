@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ConsensorThemeBuilder {
   static ThemeData build() {
-    final ThemeData base = ThemeData.light();
+    final ThemeData base = ThemeData.dark();
     return base.copyWith(
       accentColor: kAccent400,
       primaryColor: kPrimary400,
@@ -16,7 +16,7 @@ class ConsensorThemeBuilder {
         textTheme: ButtonTextTheme.normal,
       ),
       primaryIconTheme: base.iconTheme.copyWith(color: kBackground),
-      textTheme: _buildTextTheme(base.textTheme),
+      textTheme: _buildTextTheme(base.primaryTextTheme),
       primaryTextTheme: _buildTextTheme(base.primaryTextTheme),
       accentTextTheme: _buildTextTheme(base.accentTextTheme),
       iconTheme: _customIconTheme(base.iconTheme),
