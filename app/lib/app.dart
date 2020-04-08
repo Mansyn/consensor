@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-// internal
-import 'package:consensor/theme/build_theme.dart';
-import 'package:consensor/services/authentication.dart';
-import 'package:consensor/pages/root_page.dart';
+import 'package:consensor/routes/root.dart';
+import 'package:consensor/theme/build.dart';
+import 'package:consensor/services/auth.dart';
 
 class ConsensusApp extends StatelessWidget {
   @override
