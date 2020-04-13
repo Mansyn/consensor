@@ -4,9 +4,7 @@ import 'package:consensor/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:grouped_list/grouped_list.dart';
 
-import 'package:consensor/theme/styles.dart';
 import 'package:consensor/models/group.dart';
 import 'package:consensor/routes/group.dart';
 import 'package:consensor/services/group.dart';
@@ -26,15 +24,6 @@ class _GroupWidgetState extends State<GroupWidget> {
   List<Group> _groups;
 
   StreamSubscription<QuerySnapshot> _groupSub;
-
-  List _elements = [
-    {'name': 'John', 'group': 'Team A'},
-    {'name': 'Will', 'group': 'Team B'},
-    {'name': 'Beth', 'group': 'Team A'},
-    {'name': 'Miranda', 'group': 'Team B'},
-    {'name': 'Mike', 'group': 'Team C'},
-    {'name': 'Danny', 'group': 'Team C'},
-  ];
 
   @override
   void initState() {
@@ -102,17 +91,12 @@ class _GroupWidgetState extends State<GroupWidget> {
           onTap: () {
             _navigateToGroup(context, _groups[index]);
           },
+          onLongPress: () {
+            _deleteDialog(context, _groups[index], index);
+          },
         )
       ],
     ));
-  }
-
-  void _deleteNote(BuildContext context, Group group, int position) async {
-    _groupSvc.deleteGroup(group.id).then((groups) {
-      setState(() {
-        _groups.removeAt(position);
-      });
-    });
   }
 
   void _navigateToGroup(BuildContext context, Group group) async {
@@ -121,6 +105,34 @@ class _GroupWidgetState extends State<GroupWidget> {
       MaterialPageRoute(
           builder: (context) =>
               GroupPage(group, widget.user, widget.onWaiting)),
+    );
+  }
+
+  void _deleteDialog(BuildContext context, Group group, int position) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Delete Confirmation"),
+          content: new Text("Are you sure you want to delete this group?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Confirm"),
+              onPressed: () {
+                _groupSvc.deleteGroup(group.id).then((groups) {
+                  Navigator.of(context).pop();
+                });
+              },
+            )
+          ],
+        );
+      },
     );
   }
 

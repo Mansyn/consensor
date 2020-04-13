@@ -4,7 +4,7 @@ import 'colors.dart';
 
 const heroTextStyle = TextStyle(
     fontFamily: 'YatraOne',
-    fontSize: 32.0,
+    fontSize: 36.0,
     fontWeight: FontWeight.bold,
     color: primaryTextColor);
 

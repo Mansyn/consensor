@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
+import 'package:consensor/theme/styles.dart';
 import 'package:consensor/theme/colors.dart';
 import 'package:consensor/services/auth.dart';
 
@@ -79,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Login', style: TextStyle(fontSize: 17.0)),
+          title: new Text('Login'),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -87,21 +88,19 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             Hero(
                 tag: 'hero',
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      CircleAvatar(
-                          backgroundColor: accentColor,
-                          child: Icon(Icons.bubble_chart, size: 75),
-                          radius: 48.0),
-                      SizedBox(height: 15),
-                      Text("CONSENSOR",
-                          style: TextStyle(
-                              fontSize: 30.0,
-                              fontWeight: FontWeight.bold,
-                              color: accentColor))
-                    ])),
+                child: Center(
+                    child: Container(
+                        height: 200,
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              CircleAvatar(
+                                  backgroundColor: accentColor,
+                                  child: Icon(Icons.thumbs_up_down, size: 75),
+                                  radius: 48.0),
+                              Text("CONSENSOR", style: heroTextStyle)
+                            ])))),
             _showLoginButtons(),
             _showErrorMessage(),
           ],
