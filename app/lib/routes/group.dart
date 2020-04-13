@@ -101,8 +101,8 @@ class _GroupPageState extends State<GroupPage> {
     if (_isLoaded) {
       return Scaffold(
         appBar: AppBar(
-            title:
-                Text('Create Group', style: TextStyle(color: kSurfaceWhite))),
+            title: Text('Create Group',
+                style: TextStyle(color: primaryTextColor))),
         body: Container(
           margin: EdgeInsets.all(15.0),
           alignment: Alignment.center,
@@ -112,8 +112,8 @@ class _GroupPageState extends State<GroupPage> {
                 children: <Widget>[
                   TextFormField(
                       decoration: const InputDecoration(
-                        icon: const Icon(Icons.chat, color: kAccent400),
-                        hintText: 'Please name your group',
+                        icon: Icon(Icons.person),
+                        hintText: 'Please give your group a name',
                         labelText: 'Name',
                       ),
                       controller: _titleController,
@@ -122,7 +122,7 @@ class _GroupPageState extends State<GroupPage> {
                           val.isEmpty ? 'Name is required' : null),
                   Row(
                     children: <Widget>[
-                      const Icon(Icons.people, color: kAccent400),
+                      const Icon(Icons.people),
                       Padding(padding: EdgeInsets.all(8.0)),
                       Expanded(
                         child: ChipsInput(
@@ -180,12 +180,14 @@ class _GroupPageState extends State<GroupPage> {
                       ),
                     ],
                   ),
-                  Text(_errorMsg, style: TextStyle(color: kErrorRed)),
+                  Text(_errorMsg, style: TextStyle(color: Color(0xffd32f2f))),
                   Padding(padding: EdgeInsets.all(5.0)),
                   RaisedButton(
                     child: (widget.group.id != null)
-                        ? Text('Update', style: TextStyle(color: kSurfaceWhite))
-                        : Text('Add', style: TextStyle(color: kSurfaceWhite)),
+                        ? Text('Update',
+                            style: TextStyle(color: primaryTextColor))
+                        : Text('Add',
+                            style: TextStyle(color: primaryTextColor)),
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         if (_selectedUsers.length == 0) {

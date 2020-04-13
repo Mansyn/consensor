@@ -147,7 +147,7 @@ class _HomePageState extends State<HomePage> {
         break;
       case PageStatus.GROUPS:
         return FloatingActionButton(
-          backgroundColor: kAccent100,
+          backgroundColor: accentColor,
           child: Icon(Icons.add),
           tooltip: "Create New Group",
           onPressed: () => _createNewGroup(context),
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
         break;
       case PageStatus.VOTES:
         return FloatingActionButton(
-          backgroundColor: kAccent100,
+          backgroundColor: accentColor,
           child: Icon(Icons.add),
           tooltip: "Create New Vote",
           onPressed: () => _createNewVote(context),
@@ -166,14 +166,14 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget _getAccountPIcture() {
+  Widget _getAccountPicture() {
     if (widget.user.photoUrl != null && widget.user.photoUrl.length > 0) {
       return CircleAvatar(
-          backgroundColor: kPrimary100,
+          backgroundColor: accentColor,
           backgroundImage: NetworkImage(widget.user.photoUrl));
     } else {
       return CircleAvatar(
-        backgroundColor: kPrimary100,
+        backgroundColor: accentColor,
         child: Text(
           _userInitial,
           style: TextStyle(fontSize: 40.0),
@@ -189,13 +189,13 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           UserAccountsDrawerHeader(
               accountName: Text(widget.user.displayName,
-                  style: TextStyle(color: kSurfaceWhite)),
+                  style: TextStyle(color: primaryTextColor)),
               accountEmail: Text(widget.user.email,
-                  style: TextStyle(color: kSurfaceWhite)),
-              currentAccountPicture: _getAccountPIcture()),
+                  style: TextStyle(color: primaryTextColor)),
+              currentAccountPicture: _getAccountPicture()),
           ListTile(
-              title: Text("Home", style: TextStyle(color: kSurfaceWhite)),
-              trailing: Icon(Icons.home),
+              title: Text("Home"),
+              trailing: Icon(Icons.home, color: accentColor),
               onTap: () {
                 setState(() {
                   pageStatus = PageStatus.HOME;
@@ -203,9 +203,8 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).pop();
               }),
           ListTile(
-              title:
-                  Text("Your Groups", style: TextStyle(color: kSurfaceWhite)),
-              trailing: Icon(Icons.group_work),
+              title: Text("Your Groups"),
+              trailing: Icon(Icons.group_work, color: accentColor),
               onTap: () {
                 setState(() {
                   pageStatus = PageStatus.GROUPS;
@@ -213,8 +212,8 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).pop();
               }),
           ListTile(
-              title: Text("Your Votes", style: TextStyle(color: kSurfaceWhite)),
-              trailing: Icon(Icons.done),
+              title: Text("Your Votes"),
+              trailing: Icon(Icons.done, color: accentColor),
               onTap: () {
                 setState(() {
                   pageStatus = PageStatus.VOTES;
@@ -225,8 +224,8 @@ class _HomePageState extends State<HomePage> {
             child: Align(
               alignment: FractionalOffset.bottomCenter,
               child: ListTile(
-                  title: Text("Logout", style: TextStyle(color: kSurfaceWhite)),
-                  trailing: Icon(Icons.exit_to_app),
+                  title: Text("Logout"),
+                  trailing: Icon(Icons.exit_to_app, color: accentColor),
                   onTap: () {
                     Navigator.of(context).pop();
                     _signOut();
@@ -242,9 +241,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
         child: Scaffold(
-            appBar: AppBar(
-                title: Text('Consensor' + _resolveSubTitle(),
-                    style: TextStyle(color: kSurfaceWhite))),
+            appBar: AppBar(title: Text('Consensor' + _resolveSubTitle())),
             body: _showBody(),
             drawer: _buildDrawer(),
             floatingActionButton: _showFloatingAction()),

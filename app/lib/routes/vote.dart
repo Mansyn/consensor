@@ -125,8 +125,7 @@ class _VotePageState extends State<VotePage> {
   Widget build(BuildContext context) {
     if (_isLoaded) {
       return Scaffold(
-        appBar: AppBar(
-            title: Text('Create Vote', style: TextStyle(color: kSurfaceWhite))),
+        appBar: AppBar(title: Text('Create Vote')),
         body: Container(
           margin: EdgeInsets.all(15.0),
           alignment: Alignment.center,
@@ -137,7 +136,7 @@ class _VotePageState extends State<VotePage> {
                 children: <Widget>[
                   TextFormField(
                     decoration: const InputDecoration(
-                      icon: const Icon(Icons.chat, color: kAccent400),
+                      icon: const Icon(Icons.chat, color: accentColor),
                       hintText: 'What do you want to vote on',
                       labelText: 'Topic',
                     ),
@@ -150,7 +149,8 @@ class _VotePageState extends State<VotePage> {
                     builder: (FormFieldState state) {
                       return InputDecorator(
                         decoration: InputDecoration(
-                          icon: const Icon(Icons.color_lens, color: kAccent400),
+                          icon:
+                              const Icon(Icons.color_lens, color: accentColor),
                           labelText: 'Group',
                         ),
                         isEmpty: _selectedGroupId == '',
@@ -179,8 +179,8 @@ class _VotePageState extends State<VotePage> {
                     Expanded(
                         child: TextFormField(
                       decoration: InputDecoration(
-                        icon:
-                            const Icon(Icons.calendar_today, color: kAccent400),
+                        icon: const Icon(Icons.calendar_today,
+                            color: accentColor),
                         hintText: 'Enter your when vote expires',
                         labelText: 'End of vote',
                       ),
@@ -192,19 +192,18 @@ class _VotePageState extends State<VotePage> {
                           : 'Not a valid, future date',
                     )),
                     IconButton(
-                      icon: Icon(Icons.more_vert, color: kText),
+                      icon: Icon(Icons.more_vert, color: accentColor),
                       tooltip: 'Choose date',
                       onPressed: (() {
                         _chooseExpirationDate(context, _expireController.text);
                       }),
                     )
                   ]),
-                  Text(_errorMsg, style: TextStyle(color: kErrorRed)),
+                  Text(_errorMsg, style: TextStyle(color: Color(0xffd32f2f))),
                   Padding(padding: EdgeInsets.all(5.0)),
                   RaisedButton(
-                    child: (widget.vote.id != null)
-                        ? Text('Update', style: TextStyle(color: kSurfaceWhite))
-                        : Text('Add', style: TextStyle(color: kSurfaceWhite)),
+                    child:
+                        (widget.vote.id != null) ? Text('Update') : Text('Add'),
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         if (widget.vote.id != null) {

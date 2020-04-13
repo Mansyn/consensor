@@ -79,8 +79,7 @@ class _LoginPageState extends State<LoginPage> {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Login',
-              style: TextStyle(fontSize: 17.0, color: kSurfaceWhite)),
+          title: new Text('Login', style: TextStyle(fontSize: 17.0)),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -93,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       CircleAvatar(
-                          backgroundColor: kAccent400,
+                          backgroundColor: accentColor,
                           child: Icon(Icons.bubble_chart, size: 75),
                           radius: 48.0),
                       SizedBox(height: 15),
@@ -101,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                               fontSize: 30.0,
                               fontWeight: FontWeight.bold,
-                              color: kAccent400))
+                              color: accentColor))
                     ])),
             _showLoginButtons(),
             _showErrorMessage(),
@@ -115,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Text(_errorMessage,
               style: TextStyle(
                   fontSize: 15.0,
-                  color: kErrorRed,
+                  color: Color(0xffd32f2f),
                   height: 1.0,
                   fontWeight: FontWeight.w300)));
     } else {

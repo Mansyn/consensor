@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:consensor/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:grouped_list/grouped_list.dart';
 
-import 'package:consensor/theme/colors.dart';
+import 'package:consensor/theme/styles.dart';
 import 'package:consensor/models/group.dart';
 import 'package:consensor/routes/group.dart';
 import 'package:consensor/services/group.dart';
@@ -21,15 +23,24 @@ class GroupWidget extends StatefulWidget {
 
 class _GroupWidgetState extends State<GroupWidget> {
   GroupService _groupSvc = new GroupService();
-  List<Group> _items;
+  List<Group> _groups;
 
   StreamSubscription<QuerySnapshot> _groupSub;
+
+  List _elements = [
+    {'name': 'John', 'group': 'Team A'},
+    {'name': 'Will', 'group': 'Team B'},
+    {'name': 'Beth', 'group': 'Team A'},
+    {'name': 'Miranda', 'group': 'Team B'},
+    {'name': 'Mike', 'group': 'Team C'},
+    {'name': 'Danny', 'group': 'Team C'},
+  ];
 
   @override
   void initState() {
     super.initState();
 
-    _items = new List();
+    _groups = new List();
 
     _groupSub?.cancel();
     _groupSub = _groupSvc
@@ -40,63 +51,16 @@ class _GroupWidgetState extends State<GroupWidget> {
           .toList();
 
       setState(() {
-        this._items = groups;
+        this._groups = groups;
       });
     });
   }
 
-  @override
   Widget build(BuildContext context) {
-    if (_items.length > 0) {
+    if (_groups.length > 0) {
       return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5.0),
-          child: Center(
-            child: ListView.builder(
-                itemCount: _items.length,
-                padding: const EdgeInsets.all(15.0),
-                itemBuilder: (context, position) {
-                  return Column(
-                    children: <Widget>[
-                      Divider(height: 5.0),
-                      ListTile(
-                        title: Text(
-                          '${_items[position].title}',
-                          style: TextStyle(fontSize: 28.0),
-                        ),
-                        subtitle: Text(
-                          'created on ${_items[position].createdOn()}',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        leading: Column(
-                          children: <Widget>[
-                            Padding(padding: EdgeInsets.all(10.0)),
-                            CircleAvatar(
-                              backgroundColor: kPrimary50,
-                              radius: 15.0,
-                              child: Text(
-                                '${position + 1}',
-                                style: TextStyle(
-                                  fontSize: 22.0,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                                icon: const Icon(Icons.remove_circle_outline),
-                                onPressed: () => _deleteNote(
-                                    context, _items[position], position)),
-                          ],
-                        ),
-                        onTap: () => _navigateToNote(context, _items[position]),
-                      ),
-                      Padding(padding: EdgeInsets.all(5.0)),
-                    ],
-                  );
-                }),
-          ));
+          padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+          child: getGroupPageBody(context));
     } else {
       return Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -104,15 +68,54 @@ class _GroupWidgetState extends State<GroupWidget> {
     }
   }
 
+  getGroupPageBody(BuildContext context) {
+    return ListView.builder(
+      itemCount: _groups.length,
+      itemBuilder: _getGroupUI,
+      padding: EdgeInsets.all(0.0),
+    );
+  }
+
+  Widget _getGroupUI(BuildContext context, int index) {
+    return new Card(
+        child: new Column(
+      children: <Widget>[
+        new ListTile(
+          leading: CircleAvatar(
+            backgroundColor: accentColor,
+            child: Text(
+              '${index + 1}',
+            ),
+          ),
+          title: new Text(
+            _groups[index].title,
+            style: new TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+          ),
+          subtitle: new Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Text(_groups[index].createdOn(),
+                    style: new TextStyle(
+                        fontSize: 13.0, fontWeight: FontWeight.normal))
+              ]),
+          onTap: () {
+            _navigateToGroup(context, _groups[index]);
+          },
+        )
+      ],
+    ));
+  }
+
   void _deleteNote(BuildContext context, Group group, int position) async {
     _groupSvc.deleteGroup(group.id).then((groups) {
       setState(() {
-        _items.removeAt(position);
+        _groups.removeAt(position);
       });
     });
   }
 
-  void _navigateToNote(BuildContext context, Group group) async {
+  void _navigateToGroup(BuildContext context, Group group) async {
     await Navigator.push(
       context,
       MaterialPageRoute(

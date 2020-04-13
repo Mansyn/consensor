@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 
-const kPrimary50 = const Color(0xFF9E9E9E);
-const kPrimary100 = const Color(0xFF757575);
-const kPrimary200 = const Color(0xFF616161);
-const kPrimary300 = const Color(0xFF424242);
-const kPrimary400 = const Color(0xFF212121);
+const primaryColor = const Color(0xFF212121);
+const primaryLightColor = const Color(0xFF484848);
+const primaryDarkColor = const Color(0xFF000000);
 
-const kAccent100 = const Color(0xFF546E7A);
-const kAccent400 = const Color(0xFF263238);
+const accentColor = const Color(0xFFa7d129);
+const accentLightColor = const Color(0xFFdcff60);
+const accentDarkColor = const Color(0xFF74a000);
 
-const kText = const Color(0xFF111111);
-const kBackground = const Color(0xFFececec);
-const kSurfaceWhite = const Color(0xFFFFFBFA);
-const kBackgroundWhite = Colors.white;
-
-const kDisabledButton = const Color(0xFFDBDBDB);
-const kDisabledButtonText = const Color(0xFFB3B3B3);
-const kErrorRed = const Color(0xFFC5032B);
+const primaryTextColor = const Color(0xFFffffff);
+const accentTextColor = const Color(0xFF000000);
