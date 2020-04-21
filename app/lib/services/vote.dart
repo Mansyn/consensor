@@ -88,4 +88,13 @@ class VoteService {
       return false;
     });
   }
+
+  Future<dynamic> deleteGroupVotes(String groupId) async {
+    Firestore.instance
+        .collection('votes')
+        .where("groupId", isEqualTo: groupId)
+        .snapshots()
+        .listen(
+            (data) => data.documents.forEach((doc) => doc.reference.delete()));
+  }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:consensor/theme/const.dart';
 import 'package:consensor/theme/colors.dart';
 import 'package:consensor/models/group.dart';
 import 'package:consensor/services/auth.dart';
@@ -36,11 +37,14 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   VoteService _voteSvc = new VoteService();
 
+  TextEditingController _voteInputController;
+
   get _userInitial =>
       widget.user != null ? widget.user.displayName.substring(0, 1) : "";
 
   @override
   void initState() {
+    _voteInputController = new TextEditingController();
     super.initState();
     pageStatus = PageStatus.HOME;
   }
@@ -136,8 +140,80 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _createNewVote(BuildContext context) async {
-    await _voteSvc.createVote(widget.user.uid, "New vote", "", List(),
-        DateTime.now().add(Duration(days: 5)), false, DateTime.now());
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Consts.padding),
+              ),
+              backgroundColor: Colors.transparent, //this right here
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(
+                      top: Consts.avatarRadius + Consts.padding,
+                      bottom: Consts.padding,
+                      left: Consts.padding,
+                      right: Consts.padding,
+                    ),
+                    margin: EdgeInsets.only(top: Consts.avatarRadius),
+                    decoration: new BoxDecoration(
+                      color: primaryLightColor,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(Consts.padding),
+                    ),
+                    child: Column(
+                      mainAxisSize:
+                          MainAxisSize.min, // To make the card compact
+                      children: <Widget>[
+                        Text(
+                          'What do you want to vote on?',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(height: 16.0),
+                        TextField(
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'What do you want for dinner?'),
+                          controller: _voteInputController,
+                        ),
+                        SizedBox(height: 24.0),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: FlatButton(
+                            onPressed: () async {
+                              await _voteSvc.createVote(
+                                  widget.user.uid,
+                                  _voteInputController.text,
+                                  "",
+                                  List(),
+                                  DateTime.now().add(Duration(days: 5)),
+                                  false,
+                                  DateTime.now());
+                              _voteInputController.clear();
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Start"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    left: Consts.padding,
+                    right: Consts.padding,
+                    child: CircleAvatar(
+                      backgroundColor: accentDarkColor,
+                      radius: Consts.avatarRadius,
+                    ),
+                  ),
+                ],
+              ));
+        });
   }
 
   Widget _showFloatingAction() {

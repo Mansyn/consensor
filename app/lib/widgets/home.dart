@@ -11,7 +11,7 @@ class HomeWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-          Icon(Icons.people, color: accentColor, size: 200),
+          Icon(Icons.people, color: accentLightColor, size: 200),
           Text('to begin create a group')
         ])));
   }
