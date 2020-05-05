@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:consensor/theme/styles.dart';
 import 'package:consensor/theme/colors.dart';
@@ -127,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
     if (_isLoading) {
       return Center(
           child: SizedBox(
-        child: CircularProgressIndicator(),
+        child: const SpinKitChasingDots(color: accentColor, size: 100.0),
         height: 100.0,
         width: 100.0,
       ));

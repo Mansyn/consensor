@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:consensor/models/vote.dart';
 
 final CollectionReference voteCollection =
@@ -60,6 +61,42 @@ class VoteService {
           await tx.get(voteCollection.document(vote.id));
 
       await tx.update(ds.reference, vote.toMap());
+      return {'updated': true};
+    };
+
+    return Firestore.instance
+        .runTransaction(updateTransaction)
+        .then((result) => result['updated'])
+        .catchError((error) {
+      print('error: $error');
+      return false;
+    });
+  }
+
+  Future<dynamic> updateVoteGroup(Vote vote, String groupId) async {
+    final TransactionHandler updateTransaction = (Transaction tx) async {
+      final DocumentSnapshot ds =
+          await tx.get(voteCollection.document(vote.id));
+
+      await tx.update(ds.reference, vote.toMapGroup(groupId));
+      return {'updated': true};
+    };
+
+    return Firestore.instance
+        .runTransaction(updateTransaction)
+        .then((result) => result['updated'])
+        .catchError((error) {
+      print('error: $error');
+      return false;
+    });
+  }
+
+  Future<dynamic> updateVoteExpiration(Vote vote, DateTime expiration) async {
+    final TransactionHandler updateTransaction = (Transaction tx) async {
+      final DocumentSnapshot ds =
+          await tx.get(voteCollection.document(vote.id));
+
+      await tx.update(ds.reference, vote.toMapExpiration(expiration));
       return {'updated': true};
     };
 

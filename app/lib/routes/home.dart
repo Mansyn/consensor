@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
   Widget _showBody() {
     switch (pageStatus) {
       case PageStatus.HOME:
-        return HomeWidget();
+        return HomeWidget(widget.user);
         break;
       case PageStatus.GROUPS:
         return GroupWidget(widget.user, widget.onWaiting);

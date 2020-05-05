@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+import 'package:consensor/utils/extensions.dart';
+
 class Vote {
   String _id;
   String _ownerId;
@@ -48,6 +50,36 @@ class Vote {
     return map;
   }
 
+  Map<String, dynamic> toMapGroup(String groupId) {
+    var map = new Map<String, dynamic>();
+    if (_id != null) {
+      map['id'] = _id;
+    }
+    map['ownerId'] = _ownerId;
+    map['topic'] = _topic;
+    map['groupId'] = groupId;
+    map['options'] = _options;
+    map['expirationDate'] = _expirationDate;
+    map['enabled'] = _enabled;
+    map['createdDate'] = _createdDate;
+    return map;
+  }
+
+  Map<String, dynamic> toMapExpiration(DateTime expiration) {
+    var map = new Map<String, dynamic>();
+    if (_id != null) {
+      map['id'] = _id;
+    }
+    map['ownerId'] = _ownerId;
+    map['topic'] = _topic;
+    map['groupId'] = _groupId;
+    map['options'] = _options;
+    map['expirationDate'] = expiration;
+    map['enabled'] = _enabled;
+    map['createdDate'] = _createdDate;
+    return map;
+  }
+
   Vote.fromMap(Map<String, dynamic> map) {
     this._id = map['id'];
     this._ownerId = map['ownerId'];
@@ -66,6 +98,11 @@ class Vote {
   }
 
   expiresOn() {
-    return DateFormat.yMd().add_jm().format(this._expirationDate);
+    final now = DateTime.now();
+    if (this.expirationDate.isSameDate(now)) {
+      return DateFormat.jm().format(this._expirationDate);
+    } else {
+      return DateFormat.yMd().format(this._expirationDate);
+    }
   }
 }

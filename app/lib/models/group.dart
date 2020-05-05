@@ -48,3 +48,14 @@ class Group {
     return DateFormat.yMMMd().format(this._createdDate);
   }
 }
+
+class GroupViewModel {
+  String _id;
+  String _title;
+  bool selected = false;
+
+  GroupViewModel(this._id, this._title);
+
+  String get id => _id;
+  String get title => _title;
+}

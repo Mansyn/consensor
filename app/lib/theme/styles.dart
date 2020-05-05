@@ -10,3 +10,6 @@ const heroTextStyle = TextStyle(
 
 const primaryTextStyle = TextStyle(
     fontSize: 20.0, fontWeight: FontWeight.normal, color: primaryTextColor);
+
+const primaryH1TextStyle = TextStyle(
+    fontSize: 22.0, fontWeight: FontWeight.normal, color: primaryTextColor);

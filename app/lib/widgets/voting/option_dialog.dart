@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 
+import 'package:consensor/theme/colors.dart';
 import 'package:consensor/theme/const.dart';
 
-class MyDialog extends StatelessWidget {
-  final String title, description, buttonText;
-  final Image image;
+class OptionDialog extends StatelessWidget {
+  final String title, description;
+  final List<String> options;
+  final optionsController = List<TextEditingController>();
 
-  MyDialog({
-    @required this.title,
-    @required this.description,
-    @required this.buttonText,
-    this.image,
-  });
+  OptionDialog(
+      {@required this.title,
+      @required this.description,
+      @required this.options});
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> _buildFields(int length) {
+      optionsController.clear();
+
+      for (int i = 0; i < length; i++) {
+        final option = options[i];
+
+        optionsController.add(TextEditingController(text: option));
+      }
+    }
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Consts.padding),
@@ -28,14 +38,6 @@ class MyDialog extends StatelessWidget {
   dialogContent(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Positioned(
-          left: Consts.padding,
-          right: Consts.padding,
-          child: CircleAvatar(
-            backgroundColor: Colors.blueAccent,
-            radius: Consts.avatarRadius,
-          ),
-        ),
         Container(
           padding: EdgeInsets.only(
             top: Consts.avatarRadius + Consts.padding,
@@ -81,12 +83,20 @@ class MyDialog extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop(); // To close the dialog
                   },
-                  child: Text(buttonText),
+                  child: Text("Okay"),
                 ),
               ),
             ],
           ),
         ),
+        Positioned(
+          left: Consts.padding,
+          right: Consts.padding,
+          child: CircleAvatar(
+            backgroundColor: accentDarkColor,
+            radius: Consts.avatarRadius,
+          ),
+        )
       ],
     );
   }

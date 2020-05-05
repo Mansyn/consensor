@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import 'package:consensor/theme/colors.dart';
 import 'package:consensor/services/auth.dart';
 import 'package:consensor/routes/login.dart';
 import 'package:consensor/routes/home.dart';
@@ -61,7 +63,7 @@ class _RootPageState extends State<RootPage> {
       body: Container(
         alignment: Alignment.center,
         child: SizedBox(
-          child: CircularProgressIndicator(),
+          child: const SpinKitChasingDots(color: accentColor, size: 100.0),
           height: 150.0,
           width: 150.0,
         ),
@@ -76,14 +78,14 @@ class _RootPageState extends State<RootPage> {
         return _buildWaitingScreen();
         break;
       case AuthStatus.NOT_LOGGED_IN:
-        return new LoginPage(
+        return LoginPage(
           auth: widget.auth,
           onSignedIn: _onLoggedIn,
         );
         break;
       case AuthStatus.LOGGED_IN:
         if (_user != null) {
-          return new HomePage(
+          return HomePage(
               user: _user,
               auth: widget.auth,
               onSignedOut: _onSignedOut,

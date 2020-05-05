@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:consensor/theme/colors.dart';
 import 'package:consensor/models/group.dart';
@@ -66,7 +67,7 @@ class _GroupWidgetState extends State<GroupWidget> {
     } else {
       return Center(
           child: SizedBox(
-        child: CircularProgressIndicator(),
+        child: SpinKitChasingDots(color: accentColor, size: 100.0),
         height: 100.0,
         width: 100.0,
       ));
@@ -82,26 +83,26 @@ class _GroupWidgetState extends State<GroupWidget> {
   }
 
   Widget _getGroupUI(BuildContext context, int index) {
-    return new Card(
-        child: new Column(
+    return Card(
+        child: Column(
       children: <Widget>[
-        new ListTile(
+        ListTile(
           leading: CircleAvatar(
             backgroundColor: accentColor,
             child: Text(
               '${index + 1}',
             ),
           ),
-          title: new Text(
+          title: Text(
             _groups[index].title,
-            style: new TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
           ),
-          subtitle: new Column(
+          subtitle: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new Text(_groups[index].createdOn(),
-                    style: new TextStyle(
+                Text(_groups[index].createdOn(),
+                    style: TextStyle(
                         fontSize: 13.0, fontWeight: FontWeight.normal))
               ]),
           onTap: () {
@@ -129,17 +130,17 @@ class _GroupWidgetState extends State<GroupWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: new Text("Delete Confirmation"),
-          content: new Text("Are you sure you want to delete this group?"),
+          title: Text("Delete Confirmation"),
+          content: Text("Are you sure you want to delete this group?"),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text("Close"),
+            FlatButton(
+              child: Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            new FlatButton(
-              child: new Text("Confirm"),
+            FlatButton(
+              child: Text("Confirm"),
               onPressed: () {
                 _voteSvc.deleteGroupVotes(group.id);
                 _groupSvc.deleteGroup(group.id).then((groups) {
